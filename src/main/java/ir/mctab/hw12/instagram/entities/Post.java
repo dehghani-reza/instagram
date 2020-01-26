@@ -22,11 +22,11 @@ public class Post {
     @Column(nullable = false)
     private String content;
 
-    @OneToMany(mappedBy = "post",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post",fetch = FetchType.LAZY )
     private List<Like> likes = new ArrayList<>();
 
 
-    @OneToMany(fetch = FetchType.EAGER , mappedBy = "post")
+    @OneToMany(fetch = FetchType.EAGER , mappedBy = "post" , cascade = CascadeType.ALL)
     private List<Comment> comment = new LinkedList<>();
 
     @ManyToOne

@@ -1,8 +1,11 @@
 package ir.mctab.hw12.instagram.view;
 
+import ir.mctab.hw12.instagram.entities.Comment;
+import ir.mctab.hw12.instagram.entities.Like;
 import ir.mctab.hw12.instagram.entities.Post;
 import ir.mctab.hw12.instagram.entities.User;
 import ir.mctab.hw12.instagram.repositories.CrudDAO;
+import ir.mctab.hw12.instagram.repositories.LikeRepository;
 import ir.mctab.hw12.instagram.repositories.PostRepository;
 import ir.mctab.hw12.instagram.repositories.UserRepository;
 import ir.mctab.hw12.instagram.share.AuthenticationService;
@@ -19,6 +22,7 @@ public class RemoteController {
 
     private static UserRepository userRepository = UserRepository.getUserRepository();
     private static PostRepository postRepository = PostRepository.getPostRepository();
+    private static LikeRepository likeRepository = LikeRepository.getLikeRepository();
 
     //******************************class method******************************//
 
@@ -125,6 +129,43 @@ public class RemoteController {
         user.getFollowers().remove(mainUser);
         userRepository.update(user);
         return mainUser.getFollowing();
+    }
+
+    public void likePost(Long postId) throws Exception {
+        Like like = new Like();
+        like.setUser(user);
+        Post post = postRepository.loadById(postId);
+        if(post==null){
+            throw new Exception("this post not exist");
+        }
+        like.setPost(post);
+        if(likeRepository.loadByPostIdandUserId(user.getUserId(),postId)!=null){
+            likeRepository.delete(likeRepository.loadByPostIdandUserId(user.getUserId(),postId));
+        }else {
+            likeRepository.save(like);
+        }
+    }
+
+    public Post addComment(String commentContent , Long postId) throws Exception {
+        Comment comment = new Comment();
+        comment.setCommentContent(commentContent);
+        comment.setUser(user);
+        Post post = postRepository.loadById(postId);
+        comment.setPost(post);
+        if(post==null){
+            throw new Exception("this post does not exist");
+        }
+        post.getComment().add(comment);
+        postRepository.update(post);
+        return post;
+    }
+
+    public Post findByMostLike(String username) throws Exception {
+        User user = userRepository.loadByUsername(username);
+        if (user==null){
+            throw new Exception("this user name does not exist");
+        }
+        return postRepository.maxLike(user);
     }
 
 }

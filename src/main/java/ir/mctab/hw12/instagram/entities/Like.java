@@ -20,18 +20,18 @@ public class Like {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "postId")
+    @JoinColumn(name = "postId" , nullable = false)
     private Post post;
 
     @Override
     public String toString() {
         return "Like{" +
                 "id=" + id +
-                ", user=" + user +
+                ", user=" + user.getUsername() +
                 '}';
     }
 }

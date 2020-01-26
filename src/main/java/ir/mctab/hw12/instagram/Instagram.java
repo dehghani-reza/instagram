@@ -2,6 +2,7 @@ package ir.mctab.hw12.instagram;
 
 import ir.mctab.hw12.instagram.config.HibernateUtil;
 import ir.mctab.hw12.instagram.entities.Comment;
+import ir.mctab.hw12.instagram.entities.Like;
 import ir.mctab.hw12.instagram.entities.Post;
 import ir.mctab.hw12.instagram.entities.User;
 import ir.mctab.hw12.instagram.repositories.CrudDAO;
@@ -24,6 +25,16 @@ public class Instagram {
         while (!command.equalsIgnoreCase("EXIT")) {
             System.out.println("type command:");
             command = scanner.nextLine();
+
+            if(command.equalsIgnoreCase("signUp")){
+                String username = scanner.nextLine();
+                String password = scanner.nextLine();
+                try {
+                    remoteController.signUp(username,password);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
 
             if (command.equalsIgnoreCase("signin")) {
                 try {
@@ -59,7 +70,7 @@ public class Instagram {
             if (command.equalsIgnoreCase("showpost")) {
 
                 List<Post> postList = remoteController.showPosts(AuthenticationService.getInstance().getLoginUser());
-                System.out.println(postList.size());
+                postList.forEach(System.out::println);
 //                postList.forEach(System.out::println);
 
 
@@ -127,6 +138,39 @@ public class Instagram {
                     e.printStackTrace();
                 }
                 System.out.println(following);
+            }
+
+            if (command.equalsIgnoreCase("like")) {
+                String postId = scanner.nextLine();
+                try {
+                    remoteController.likePost(Long.valueOf(postId));
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+
+            if (command.equalsIgnoreCase("comment")) {
+                System.out.println("id post and comment content");
+                String postId = scanner.nextLine();
+                String content = scanner.nextLine();
+                try {
+                    Post post =remoteController.addComment(content, Long.valueOf(postId));
+                    System.out.println(post);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+
+
+            if (command.equalsIgnoreCase("max")) {
+                System.out.println("username");
+                String username = scanner.nextLine();
+                try {
+                    Post post =remoteController.findByMostLike(username);
+                    System.out.println(post);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
             }
 
 
