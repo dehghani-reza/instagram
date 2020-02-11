@@ -5,10 +5,6 @@ import ir.mctab.hw12.instagram.entities.User;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
 public class UserRepository extends CrudDAO<User, Long> {
 
     private static UserRepository userRepository;
