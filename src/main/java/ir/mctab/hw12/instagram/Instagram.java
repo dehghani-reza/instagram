@@ -23,10 +23,17 @@ public class Instagram {
         String command = "hello";
 
         while (!command.equalsIgnoreCase("EXIT")) {
+            commandMenu(AuthenticationService.getInstance().getLoginUser());
             System.out.println("type command:");
             command = scanner.nextLine();
-
+            try {
+                commandValidation(command);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                continue;
+            }
             if(command.equalsIgnoreCase("signUp")){
+                System.out.println("write your username and password: ");
                 String username = scanner.nextLine();
                 String password = scanner.nextLine();
                 try {
@@ -38,17 +45,19 @@ public class Instagram {
 
             if (command.equalsIgnoreCase("signin")) {
                 try {
-                    System.out.println("type user pass");
+                    System.out.println("type your username and  pass:");
                     String u = scanner.nextLine();
                     String w = scanner.nextLine();
                     remoteController.signIn(u, w);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
+                    continue;
                 }
                 System.out.println(AuthenticationService.getInstance().getLoginUser().getUsername());
             }
 
             if (command.equalsIgnoreCase("delete")) {
+                System.out.println("write your pass to delete your account:");
                 String p = scanner.nextLine();
                 try {
                     remoteController.deleteUser(p);
@@ -58,6 +67,7 @@ public class Instagram {
             }
 
             if (command.equalsIgnoreCase("Editpassword")) {
+                System.out.println("write your oldPass and your new pass");
                 String p = scanner.nextLine();
                 String pp = scanner.nextLine();
                 try {
@@ -79,10 +89,12 @@ public class Instagram {
             if (command.equalsIgnoreCase("showfollowingpost")) {
                 List<Post> postList = remoteController.showFollowingPost();
                 System.out.println(postList.size());
+                postList.forEach(System.out::println);
 
             }
 
             if (command.equalsIgnoreCase("addpost")) {
+                System.out.println("write some thing: ....");
                 String content = scanner.nextLine();
                 Post post = remoteController.savePost(content);
                 System.out.println(post);
@@ -90,7 +102,7 @@ public class Instagram {
 
             if (command.equalsIgnoreCase("editpost")) {
                 System.out.println(remoteController.showPosts(AuthenticationService.getInstance().getLoginUser()));
-                System.out.println("id , content");
+                System.out.println("id , content : ");
                 String id = scanner.nextLine();
                 String content = scanner.nextLine();
                 Post post = null;
@@ -104,6 +116,7 @@ public class Instagram {
 
             if (command.equalsIgnoreCase("deletePost")) {
                 System.out.println(remoteController.showPosts(AuthenticationService.getInstance().getLoginUser()));
+                System.out.println("which post do you want to delete write id: ");
                 String id = scanner.nextLine();
                 try {
                     remoteController.deletePost(Long.valueOf(id));
@@ -113,12 +126,14 @@ public class Instagram {
             }
 
             if (command.equalsIgnoreCase("finduser")) {
+                System.out.println("write username: ");
                 String username = scanner.nextLine();
                 User user = remoteController.searchUserByUsername(username);
                 System.out.println(user);
             }
 
             if (command.equalsIgnoreCase("follow")) {
+                System.out.println("write username: ");
                 String username = scanner.nextLine();
                 Set<User> following = null;
                 try {
@@ -130,6 +145,7 @@ public class Instagram {
             }
 
             if (command.equalsIgnoreCase("unfollow")) {
+                System.out.println("write username: ");
                 String username = scanner.nextLine();
                 Set<User> following = null;
                 try {
@@ -141,6 +157,7 @@ public class Instagram {
             }
 
             if (command.equalsIgnoreCase("like")) {
+                System.out.println("write post id that you want to like: ");
                 String postId = scanner.nextLine();
                 try {
                     remoteController.likePost(Long.valueOf(postId));
@@ -163,7 +180,7 @@ public class Instagram {
 
 
             if (command.equalsIgnoreCase("max")) {
-                System.out.println("username");
+                System.out.println("username: ");
                 String username = scanner.nextLine();
                 try {
                     Post post =remoteController.findByMostLike(username);
@@ -172,9 +189,37 @@ public class Instagram {
                     System.out.println(e.getMessage());
                 }
             }
+            if(command.equalsIgnoreCase("signOut")){
+                AuthenticationService.getInstance().setLoginUser(null);
+                System.out.println("Bye");
+            }
 
 
         }
 
     }//end of method main
+    static void commandMenu(User user){
+        if(user==null){
+            System.out.println("here is your command list: " +
+                    "\n signUp \t signIn");
+            return;
+        }
+        System.out.println("here is your command list "+user.getUsername()+": " +
+                "\n signOut \t delete \t editpassword " +
+                "\n showpost \t showfollowingpost \t addpost \t editpost \t delete post" +
+                "\n finduser \t follow \t unfollow \t like \t comment \t max(max Like) ");
+    }
+
+    static void commandValidation(String command) throws Exception {
+        if(AuthenticationService.getInstance().getLoginUser()==null){
+            if (!(command.equalsIgnoreCase("signUp")||command.equalsIgnoreCase("signin"))){
+                throw new Exception("wrong command first sign in or sign up");
+            }
+        }
+        if (AuthenticationService.getInstance().getLoginUser()!=null){
+            if (command.equalsIgnoreCase("signUp")||command.equalsIgnoreCase("signin")){
+                throw new Exception("wrong command your still log in");
+            }
+        }
+    }
 }

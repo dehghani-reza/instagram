@@ -38,11 +38,11 @@ public class PostRepository extends CrudDAO<Post, Long> {
 
     }
 
-    public Post maxLike(User user){
+    public Post maxLike(User user) throws Exception {
         Query<Post> query1 = session.createQuery("from Post where userId="+user.getUserId());
         List<Post> postList = query1.list();
         if(postList.size()==0){
-            throw new Exception("this user dont have any post")
+            throw new Exception("this user dont have any post");
         }
         postList.sort(Comparator.comparingInt(o -> o.getLikes().size()));
         return postList.get(postList.size()-1);
